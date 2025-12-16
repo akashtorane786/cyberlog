@@ -1,16 +1,71 @@
-# cyberlog_app
+# CyberLog – Named Routes Navigation (Session 6)
 
-A new Flutter project.
+## 📌 Assignment Overview
 
-## Getting Started
+This project demonstrates **Named Routes navigation in Flutter**, which is used for structured navigation in larger applications (similar to website URLs).
 
-This project is a starting point for a Flutter application.
+The app contains **three screens**:
 
-A few resources to get you started if this is your first Flutter project:
+* Screen A
+* Screen B
+* Screen C
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Navigation between screens is handled using **Navigator.pushNamed()**.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🚀 Features Implemented
+
+* Multiple screens created using StatelessWidget
+* Named routes defined inside `MaterialApp`
+* Navigation using route names instead of `MaterialPageRoute`
+* Clean and simple UI structure
+
+---
+
+## 🧭 Navigation Flow
+
+* Screen A → Screen B
+* Screen B → Screen C
+
+Navigation is done using:
+
+```
+Navigator.pushNamed(context, '/screenB');
+Navigator.pushNamed(context, '/screenC');
+```
+
+---
+
+## 🛠 Technologies Used
+
+* Flutter
+* Dart
+* Material UI
+
+---
+
+## ▶ How to Run the App
+
+1. Clone the repository
+2. Open the project in Android Studio or VS Code
+3. Start an Android Emulator
+4. Run the command:
+
+```
+flutter run
+```
+
+---
+
+## 📚 What I Learned
+
+* Difference between direct navigation and named routes
+* How named routes help in managing navigation for large apps
+* Proper structure of routes in `MaterialApp`
+
+---
+
+## 👤 Author
+
+**Akash Torane**
