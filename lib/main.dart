@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/cyber_tip_service.dart';
 
 void main() {
   runApp(const CyberLogApp());
@@ -28,7 +29,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // Pages for Bottom Navigation
   final List<Widget> _pages = const [
     HomePage(),
     LogsPage(),
@@ -41,11 +41,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text('CyberLog'),
       ),
-
-      // 👇 Change body based on index
       body: _pages[_currentIndex],
-
-      // 👇 Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -74,16 +70,60 @@ class _MainScreenState extends State<MainScreen> {
 
 /* ---------------- HOME PAGE ---------------- */
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final CyberTipService _cyberTipService = CyberTipService();
+  String cyberTip = "Loading Cyber Tip...";
+
+  @override
+  void initState() {
+    super.initState();
+    loadCyberTip();
+  }
+
+  void loadCyberTip() async {
+    final tip = await _cyberTipService.fetchCyberTip();
+    setState(() {
+      cyberTip = tip;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Home Page',
-        style: TextStyle(fontSize: 22),
-      ),
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Cyber Tip of the Day",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                cyberTip,
+                style: const TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
