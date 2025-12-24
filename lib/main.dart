@@ -1,4 +1,4 @@
-import 'session9_classroom.dart';
+import 'services/app_settings_service.dart';
 import 'package:flutter/material.dart';
 import 'services/cyber_tip_service.dart';
 
@@ -6,35 +6,76 @@ void main() {
   runApp(const CyberLogApp());
 }
 
-class CyberLogApp extends StatelessWidget {
+class CyberLogApp extends StatefulWidget {
   const CyberLogApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const Session9Classroom(),
+  State<CyberLogApp> createState() => _CyberLogAppState();
+}
 
+class _CyberLogAppState extends State<CyberLogApp> {
+  final AppSettingsService _settingsService = AppSettingsService();
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  void _loadTheme() async {
+    final savedTheme = await _settingsService.getDarkMode();
+    setState(() {
+      _isDarkMode = savedTheme;
+    });
+  }
+
+  void _toggleTheme(bool value) async {
+    await _settingsService.setDarkMode(value);
+    setState(() {
+      _isDarkMode = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      home: MainScreen(
+        isDarkMode: _isDarkMode,
+        onThemeChanged: _toggleTheme,
+      ),
     );
   }
 }
-
 /* ---------------- MAIN SCREEN ---------------- */
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
+
+  const MainScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
+
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    LogsPage(),
-    SettingsPage(),
+  late final List<Widget> _pages = [
+    const HomePage(),
+    const LogsPage(),
+    SettingsPage(
+      isDarkMode: widget.isDarkMode,
+      onThemeChanged: widget.onThemeChanged,
+    ),
   ];
 
   @override
@@ -149,15 +190,27 @@ class LogsPage extends StatelessWidget {
 /* ---------------- SETTINGS PAGE ---------------- */
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
+
+  const SettingsPage({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Settings Page',
-        style: TextStyle(fontSize: 22),
-      ),
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        SwitchListTile(
+          title: const Text('Dark Mode'),
+          value: isDarkMode,
+          onChanged: onThemeChanged,
+        ),
+      ],
     );
   }
 }
+
