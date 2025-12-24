@@ -1,3 +1,4 @@
+import 'session9_classroom.dart';
 import 'package:flutter/material.dart';
 import 'services/cyber_tip_service.dart';
 
@@ -12,7 +13,8 @@ class CyberLogApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      home: const Session9Classroom(),
+
     );
   }
 }
