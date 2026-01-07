@@ -1,10 +1,22 @@
-import 'services/app_settings_service.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'services/cyber_tip_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+import 'services/app_settings_service.dart';
+import 'services/cyber_tip_service.dart';
+import 'camera_screen.dart';
+
+/* -------- CAMERA GLOBAL -------- */
+late List<CameraDescription> cameras;
+
+/* -------- MAIN -------- */
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
   runApp(const CyberLogApp());
 }
+
+/* ---------------- APP ROOT ---------------- */
 
 class CyberLogApp extends StatefulWidget {
   const CyberLogApp({super.key});
@@ -15,7 +27,7 @@ class CyberLogApp extends StatefulWidget {
 
 class _CyberLogAppState extends State<CyberLogApp> {
   final AppSettingsService _settingsService = AppSettingsService();
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
 
   @override
   void initState() {
@@ -41,7 +53,19 @@ class _CyberLogAppState extends State<CyberLogApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      theme: _isDarkMode
+          ? ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0B0F1A),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0B0F1A),
+          elevation: 0,
+        ),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF00E5FF),
+        ),
+      )
+          : ThemeData.light(),
       home: MainScreen(
         isDarkMode: _isDarkMode,
         onThemeChanged: _toggleTheme,
@@ -49,6 +73,7 @@ class _CyberLogAppState extends State<CyberLogApp> {
     );
   }
 }
+
 /* ---------------- MAIN SCREEN ---------------- */
 
 class MainScreen extends StatefulWidget {
@@ -65,7 +90,6 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
@@ -81,30 +105,18 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CyberLog'),
-      ),
+      appBar: AppBar(title: const Text('CyberLog')),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF0B0F1A),
+        selectedItemColor: const Color(0xFF00E5FF),
+        unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Logs',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Logs'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );
@@ -137,34 +149,98 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  /* -------- CAMERA -------- */
+  Future<void> openCamera() async {
+    final status = await Permission.camera.request();
+
+    if (status.isGranted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CameraScreen(cameras: cameras),
+        ),
+      );
+    }
+  }
+
+  /* -------- STORAGE PERMISSION (STEP 2) -------- */
+  Future<void> requestStoragePermission() async {
+    final status = await Permission.storage.request();
+
+    if (status.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Storage permission granted ✅")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Storage permission denied ❌")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       children: [
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
+            color: const Color(0xFF121826),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFF00E5FF).withOpacity(0.4),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Cyber Tip of the Day",
+                "CYBER TIP OF THE DAY",
                 style: TextStyle(
-                  fontSize: 18,
+                  color: Color(0xFF00E5FF),
+                  fontSize: 14,
+                  letterSpacing: 1.2,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Text(
                 cyberTip,
-                style: const TextStyle(fontSize: 15),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                  height: 1.4,
+                ),
               ),
             ],
           ),
+        ),
+
+        const SizedBox(height: 24),
+
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF00E5FF),
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          onPressed: openCamera,
+          icon: const Icon(Icons.camera_alt),
+          label: const Text("OPEN CAMERA"),
+        ),
+
+        const SizedBox(height: 12),
+
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF00E5FF),
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          onPressed: requestStoragePermission,
+          icon: const Icon(Icons.folder),
+          label: const Text("ALLOW STORAGE ACCESS"),
         ),
       ],
     );
@@ -181,7 +257,7 @@ class LogsPage extends StatelessWidget {
     return const Center(
       child: Text(
         'Logs Page',
-        style: TextStyle(fontSize: 22),
+        style: TextStyle(color: Colors.white70, fontSize: 22),
       ),
     );
   }
@@ -213,4 +289,3 @@ class SettingsPage extends StatelessWidget {
     );
   }
 }
-
