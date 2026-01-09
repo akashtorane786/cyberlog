@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -265,7 +266,7 @@ class LogsPage extends StatelessWidget {
 
 /* ---------------- SETTINGS PAGE ---------------- */
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   final bool isDarkMode;
   final Function(bool) onThemeChanged;
 
@@ -276,14 +277,49 @@ class SettingsPage extends StatelessWidget {
   });
 
   @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  static const platform = MethodChannel('device_info_channel');
+
+  String deviceModel = "Fetching device info...";
+
+  @override
+  void initState() {
+    super.initState();
+    getDeviceModel();
+  }
+
+  Future<void> getDeviceModel() async {
+    try {
+      final String result =
+      await platform.invokeMethod('getDeviceModel');
+      setState(() {
+        deviceModel = result;
+      });
+    } catch (e) {
+      setState(() {
+        deviceModel = "Failed to get device model";
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         SwitchListTile(
           title: const Text('Dark Mode'),
-          value: isDarkMode,
-          onChanged: onThemeChanged,
+          value: widget.isDarkMode,
+          onChanged: widget.onThemeChanged,
+        ),
+        const SizedBox(height: 20),
+        ListTile(
+          title: const Text("Device Model"),
+          subtitle: Text(deviceModel),
+          leading: const Icon(Icons.phone_android),
         ),
       ],
     );

@@ -1,67 +1,67 @@
-# CyberLog 🚀
+# CyberLog 📱🔐
 
-CyberLog is a Flutter-based mobile application developed as part of classroom and portfolio assignments.  
-The app demonstrates core Flutter concepts such as widgets, navigation, API integration, state management, and local data persistence.
-
----
-
-## 📱 Features Implemented
-
-### ✅ Session 7 – Provider (Portfolio)
-- Used **Provider** for state management
-- Managed application data cleanly using `ChangeNotifier`
-
-### ✅ Session 8 – API Integration (Classroom + Portfolio)
-- Fetched data from a **public API**
-- Displayed **Cyber Tip of the Day** on the dashboard
-- Used the **http** package
-
-### ✅ Session 9 – Local Storage (Classroom)
-- Saved user name using **SharedPreferences**
-- Automatically displayed saved name on app startup
-
-### ✅ Session 9 – Local Storage (Portfolio)
-- Stored **App Settings (Dark Mode)** using SharedPreferences
-- Theme preference persists even after app restart
+CyberLog is a Flutter-based portfolio application developed as part of classroom and portfolio assignments.  
+The app focuses on **cyber awareness**, **local storage**, and **Android permission handling** following modern Android guidelines.
 
 ---
 
-## 🛠️ Technologies Used
+## 🚀 Features
+
+### ✅ Session 9
+- Save user preferences locally using SharedPreferences
+- Automatically load saved settings on app startup
+- Dark mode support
+
+### ✅ Session 10 (Permission-Based Features)
+
+#### 📷 Camera
+- Camera permission declared in AndroidManifest
+- Runtime permission request
+- Opens device camera using Flutter camera plugin
+
+#### 📁 Storage
+- Storage permission declared
+- Runtime permission handling implemented
+- Permission status handled and shown to the user
+
+#### 🌐 Internet
+- Internet permission declared in AndroidManifest
+- Used to fetch cyber tips dynamically via API
+
+---
+
+## 🛡 Permissions Used
+
+| Permission | Purpose |
+|----------|--------|
+| CAMERA | Capture images using device camera |
+| READ_EXTERNAL_STORAGE | Demonstrates storage permission handling |
+| INTERNET | Fetch cyber tips from online source |
+
+> Note: On Android 13+, storage permission is deprecated and may be auto-denied by the system. Runtime handling is still implemented as required.
+
+---
+
+## 🧠 Technical Stack
+
 - Flutter
 - Dart
-- HTTP package
-- Provider
-- SharedPreferences
 - Android Studio
-- Git & GitHub
+- camera plugin
+- permission_handler
+- SharedPreferences
 
 ---
 
-## ▶️ How to Run the Project
+## 📂 Project Structure
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/akashtorane786/cyberlog.git
-
-2. Navigate to the project folder:
-cd cyberlog
-
-3.Install dependencies:
-flutter pub get
-
-4.Run the app:
-flutter run
-
-👨‍🎓 Author
-
-Akash Torane
-Flutter Developer (Student)
-
-📄 License
-
-This project is created for educational purposes.
-
-
-✅ This README is **clean, professional, and marks-friendly**.
-
----
+lib/
+├── main.dart
+├── camera_screen.dart
+└── services/
+├── app_settings_service.dart
+└── cyber_tip_service.dart
+## Session 11 Updates
+- Implemented Flutter MethodChannel
+- Fetched native Android device model
+- Displayed device model and Android version in Settings page
