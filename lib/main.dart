@@ -1,3 +1,4 @@
+import 'security_checklist_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -263,7 +264,6 @@ class LogsPage extends StatelessWidget {
     );
   }
 }
-
 /* ---------------- SETTINGS PAGE ---------------- */
 
 class SettingsPage extends StatefulWidget {
@@ -310,16 +310,38 @@ class _SettingsPageState extends State<SettingsPage> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        /* ---- DARK MODE ---- */
         SwitchListTile(
           title: const Text('Dark Mode'),
           value: widget.isDarkMode,
           onChanged: widget.onThemeChanged,
         ),
+
         const SizedBox(height: 20),
+
+        /* ---- DEVICE MODEL ---- */
         ListTile(
+          leading: const Icon(Icons.phone_android),
           title: const Text("Device Model"),
           subtitle: Text(deviceModel),
-          leading: const Icon(Icons.phone_android),
+        ),
+
+        const SizedBox(height: 20),
+
+        /* ---- SECURITY CHECKLIST ---- */
+        ListTile(
+          leading: const Icon(Icons.security),
+          title: const Text("Security Checklist"),
+          subtitle: const Text("View device security status"),
+          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SecurityChecklistScreen(),
+              ),
+            );
+          },
         ),
       ],
     );
